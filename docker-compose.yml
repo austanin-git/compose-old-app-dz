@@ -1,0 +1,50 @@
+version: '3.3'
+services:
+# Mysql
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'App42_db'
+      MYSQL_USER: 'dbadmin'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    networks:
+      App_net1:
+        ipv4_address: 192.168.1.100
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+# Maven Service
+  maven:
+    build:
+      dockerfile: Dockerfile
+      context: ./maven
+    volumes:
+      - war-files:/app/compose-old-app/target
+    networks:
+      App_net1:
+        ipv4_address: 192.168.1.110
+# Tomcat
+  tomcat:
+    image: 'tomcat:alpine'
+    networks:
+      App_net1:
+        ipv4_address: 192.168.1.120
+    ports:
+      - '8080:8080'
+    volumes:
+      - war-files:/usr/local/tomcat/webapps/
+networks:
+  App_net1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.1.0/24
+volumes:
+  my-db:
+  war-files:
