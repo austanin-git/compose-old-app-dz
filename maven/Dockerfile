@@ -11,6 +11,8 @@ RUN apk update git;\
 
 WORKDIR /app/compose-old-app
 
+RUN cp /app/compose-old-app/WebContent/Config.propeties /app/compose-old-app/Config.propeties
+
 # Maven package
 
 RUN mvn install
